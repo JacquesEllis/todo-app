@@ -1,0 +1,21 @@
+{
+  "name": "todo-app",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "packages/ui",
+    "packages/api",
+    "packages/frontend"
+  ],
+  "scripts": {
+    "build":        "npm run build --workspaces",
+    "test":         "npm run test --workspaces --if-present",
+    "lint":         "npm run lint --workspaces --if-present",
+    "storybook":    "npm run storybook --workspace=packages/ui",
+    "dev:api":      "npm run dev --workspace=packages/api",
+    "dev:frontend": "npm run dev --workspace=packages/frontend"
+  },
+  "engines": {
+    "node": "20"
+  }
+}
