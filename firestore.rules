@@ -1,9 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Placeholder — Data Engineer will replace this
+
+    // Deny all reads and writes to every path for every user,
+    // authenticated or not. This is the Hello World baseline —
+    // no data model exists yet and no access should be permitted.
     match /{document=**} {
       allow read, write: if false;
     }
+
   }
 }
