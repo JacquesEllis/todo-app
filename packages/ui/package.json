@@ -1,0 +1,16 @@
+{
+  "name": "@todo-app/ui",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "storybook":       "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test":            "jest",
+    "lint":            "eslint src/",
+    "build":           "echo 'No build step for ui'"
+  },
+  "peerDependencies": {
+    "react":     "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
