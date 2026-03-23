@@ -1,35 +1,17 @@
 {
   "hosting": {
+    "target": "ai-bot-experiment",
     "public": "packages/frontend/dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      { "source": "/api/**", "function": "api" },
-      { "source": "**",      "destination": "/index.html" }
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
     ],
-    "headers": [
-      {
-        "source": "**/*.@(js|css)",
-        "headers": [{ "key": "Cache-Control", "value": "max-age=31536000" }]
-      },
+    "rewrites": [
       {
         "source": "**",
-        "headers": [
-          { "key": "X-Frame-Options",       "value": "SAMEORIGIN" },
-          { "key": "X-Content-Type-Options", "value": "nosniff" }
-        ]
+        "destination": "/index.html"
       }
     ]
-  },
-  "functions": [
-    {
-      "source": "packages/api",
-      "codebase": "api",
-      "runtime": "nodejs20",
-      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"]
-    }
-  ],
-  "firestore": {
-    "rules":   "firestore.rules",
-    "indexes": "firestore.indexes.json"
   }
 }
