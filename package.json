@@ -8,11 +8,11 @@
     "packages/frontend"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "storybook": "npm run storybook --workspace=packages/ui",
-    "dev:api": "npm run dev --workspace=packages/api",
+    "build":        "npm run build --workspaces",
+    "test":         "npm run test --workspaces --if-present",
+    "lint":         "npm run lint --workspaces --if-present",
+    "storybook":    "npm run storybook --workspace=packages/ui",
+    "dev:api":      "npm run dev --workspace=packages/api",
     "dev:frontend": "npm run dev --workspace=packages/frontend"
   }
 }
