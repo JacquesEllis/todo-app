@@ -1,27 +1,30 @@
 import type { Config } from 'jest';
 
-/**
- * Jest configuration for packages/frontend.
- * Uses ts-jest to transpile TypeScript and jsdom for browser APIs.
- */
 const config: Config = {
-  preset:          'ts-jest',
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  setupFilesAfterFramework: [],
+  setupFilesAfterFramework: undefined,
+  setupFiles: ['./src/setupTests.ts'],
   moduleNameMapper: {
-    // Resolve workspace aliases the same way Vite does
+    // Static assets
+    '\\.(jpg|jpeg|png|gif|svg|css)$': '<rootDir>/src/__mocks__/fileMock.ts',
+    // Workspace package aliases
+    '^@todo-app/ui(.*)$': '<rootDir>/../ui/src$1',
     '^@todo-app/shared(.*)$': '<rootDir>/../shared/src$1',
-    '^@todo-app/ui(.*)$':     '<rootDir>/../ui/src$1',
-    // Stub CSS imports so Jest does not choke on them
-    '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/fileMock.ts',
+    // Firebase mocks
+    '^../../firebase$': '<rootDir>/src/__mocks__/firebase.ts',
+    '^../firebase$': '<rootDir>/src/__mocks__/firebase.ts',
+    '^./firebase$': '<rootDir>/src/__mocks__/firebase.ts',
   },
   transform: {
-    '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }],
+    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['@babel/preset-react', '@babel/preset-env'] }],
   },
-  testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+  transformIgnorePatterns: [
+    'node_modules/(?!(@todo-app)/)',
   ],
+  testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx|js|jsx)', '**/?(*.)+(test|spec).(ts|tsx|js|jsx)'],
 };
 
 export default config;
