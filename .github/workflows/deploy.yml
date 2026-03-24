@@ -10,31 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build frontend
-        # All VITE_* vars are injected here so Vite bakes them into the bundle.
-        # The GitHub Actions secrets use the names WITHOUT the VITE_ prefix;
-        # we map them explicitly below so the secret names stay clean.
         working-directory: packages/frontend
         env:
-          VITE_GRAPHQL_API_URL:             ${{ secrets.GRAPHQL_API_URL }}
+          # Firebase client config
           VITE_FIREBASE_API_KEY:            ${{ secrets.FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN:        ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID:         ${{ secrets.FIREBASE_PROJECT_ID }}
           VITE_FIREBASE_STORAGE_BUCKET:     ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID:             ${{ secrets.FIREBASE_APP_ID }}
+          # GraphQL API endpoint
+          VITE_GRAPHQL_API_URL:             ${{ secrets.GRAPHQL_API_URL }}
         run: npm run build
 
       - name: Deploy to Firebase Hosting
@@ -45,3 +44,8 @@ jobs:
           channelId:            live
           projectId:            ai-bot-experiment
           target:               ai-bot-experiment
+
+      - name: Deploy Firebase Functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: npx firebase-tools@latest deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --project ai-bot-experiment
