@@ -1,31 +1,38 @@
-import { useState }                    from 'react';
+import { useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth }                        from '../firebase';
+import { auth } from '../firebase';
 
 /**
- * Full-page sign-in screen.
- * Uses Firebase Google popup auth — no direct Firestore access.
+ * SignInPage
+ *
+ * Displayed when the user is not authenticated.
+ * Copy is sourced from the UX spec:
+ * https://github.com/JacquesEllis/ai-bot-profiles/blob/main/docs/ux/
  */
-export default function SignInPage(): JSX.Element {
+export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = async (): Promise<void> => {
+  const handleSignIn = async () => {
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // Auth state update is handled by useAuth — no manual redirect needed
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Sign-in failed. Please try again.';
-      setError(message);
+      // Auth state change is handled by useAuth in App.tsx — no redirect needed here.
+    } catch (err) {
+      // Show a user-friendly error message on failure (e.g. popup closed, network error)
+      setError('Sign-in failed. Please try again.');
+      // Log for debugging in development
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console -- intentional dev-only logging
+        console.error('Sign-in error:', err);
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white rounded-2xl shadow-md p-8 flex flex-col items-center gap-6 w-full max-w-sm">
-        <h1 className="text-2xl font-semibold text-gray-800">Task Manager</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm p-8 flex flex-col items-center gap-6">
+        <h1 className="text-2xl font-bold text-gray-900">Task Manager</h1>
         <p className="text-sm text-gray-500 text-center">
           Sign in to manage your tasks
         </p>
@@ -41,40 +48,33 @@ export default function SignInPage(): JSX.Element {
           onClick={handleSignIn}
           className="
             w-full flex items-center justify-center gap-3
-            bg-white border border-gray-300 rounded-lg px-4 py-3
+            px-4 py-2.5 rounded-lg border border-gray-300
             text-sm font-medium text-gray-700
             hover:bg-gray-50 transition-colors
-            focus:outline-none focus:ring-2 focus:ring-brand-500
+            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
           "
         >
-          {/* Google 'G' logo — inline SVG avoids an asset import */}
           <svg
+            className="w-5 h-5"
+            viewBox="0 0 48 48"
             aria-hidden="true"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            xmlns="http://www.w3.org/2000/svg"
+            focusable="false"
           >
             <path
-              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209
-                 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567
-                 2.684-3.874 2.684-6.615z"
-              fill="#4285F4"
-            />
-            <path
-              d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.259c-.806.54-1.837.86-3.047.86-2.344
-                 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-              fill="#34A853"
-            />
-            <path
-              d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996
-                 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-              fill="#FBBC05"
-            />
-            <path
-              d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9
-                 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
               fill="#EA4335"
+              d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.7 2.3 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13 17.8 9.5 24 9.5z"
+            />
+            <path
+              fill="#4285F4"
+              d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.5-4.1 7.1-10.2 7.1-17.1z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M10.6 28.6A14.7 14.7 0 0 1 9.5 24c0-1.6.3-3.1.7-4.5l-7.9-6.1A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.7 10.7l7.9-6.1z"
+            />
+            <path
+              fill="#34A853"
+              d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.6-5.9c-2 1.4-4.7 2.2-7.6 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"
             />
           </svg>
           Sign in with Google
