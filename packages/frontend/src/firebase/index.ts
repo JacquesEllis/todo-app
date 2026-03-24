@@ -1,11 +1,8 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth }                         from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
-/**
- * Firebase configuration is sourced entirely from environment variables.
- * In CI these are injected as GitHub Actions secrets.
- * Locally they live in packages/frontend/.env.local (git-ignored).
- */
+// Firebase configuration is sourced exclusively from environment variables.
+// Never hardcode project IDs, API keys, or other credentials here.
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -15,8 +12,5 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Prevent re-initialising the app during hot-module replacement
-const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-export { app, auth };
+const app  = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
