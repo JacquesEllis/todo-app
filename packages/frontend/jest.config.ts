@@ -5,16 +5,14 @@ import type { Config } from 'jest';
  * Uses ts-jest to transpile TypeScript and jsdom for browser APIs.
  */
 const config: Config = {
-  preset:      'ts-jest',
+  preset:          'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterFramework: [],
-  setupFilesAfterFramework: [], // intentional — see below
   setupFilesAfterEnv: ['@testing-library/jest-dom'],
   moduleNameMapper: {
     // Resolve workspace aliases the same way Vite does
     '^@todo-app/shared(.*)$': '<rootDir>/../shared/src$1',
     '^@todo-app/ui(.*)$':     '<rootDir>/../ui/src$1',
-    // Stub CSS imports so Jest doesn't choke on them
+    // Stub CSS imports so Jest does not choke on them
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/fileMock.ts',
   },
   transform: {
