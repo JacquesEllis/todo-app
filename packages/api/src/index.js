@@ -1,36 +1,58 @@
-const functions = require('firebase-functions');
-const { ApolloServer } = require('apollo-server-express');
-const express = require('express');
-const cors = require('cors');
+const { ApolloServer, gql } = require('apollo-server');
 
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
-const { context } = require('./context');
-
-const app = express();
-app.use(cors({ origin: true }));
-app.use(express.json());
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context,
-  introspection: true,
-});
-
-let serverStarted = false;
-
-/**
- * Firebase Cloud Function: api
- * Exported name must match the function name in firebase.json ("api").
- * Project ID and region are resolved at deploy time from the Firebase
- * environment — never hardcoded here.
- */
-exports.api = functions.https.onRequest(async (req, res) => {
-  if (!serverStarted) {
-    await server.start();
-    server.applyMiddleware({ app, path: '/graphql' });
-    serverStarted = true;
+const typeDefs = gql`
+  type Task {
+    id: ID!
+    title: String!
+    completed: Boolean!
+    createdAt: String!
+    completedAt: String
   }
-  return app(req, res);
-});
+
+  input CreateTaskInput {
+    title: String!
+  }
+
+  type Query {
+    tasks: [Task!]!
+  }
+
+  type Mutation {
+    createTask(input: CreateTaskInput!): Task!
+    markComplete(id: ID!, completed: Boolean!): Task!
+    deleteTask(id: ID!): Boolean!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    tasks: () => [],
+  },
+  Mutation: {
+    createTask: (_, { input }) => ({
+      id: Date.now().toString(),
+      title: input.title,
+      completed: false,
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+    }),
+    markComplete: (_, { id, completed }) => ({
+      id,
+      title: 'Task',
+      completed,
+      createdAt: new Date().toISOString(),
+      completedAt: completed ? new Date().toISOString() : null,
+    }),
+    deleteTask: () => true,
+  },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+
+if (require.main === module) {
+  server.listen().then(({ url }) => {
+    console.log(`API running at ${url}`);
+  });
+}
+
+module.exports = { server };
