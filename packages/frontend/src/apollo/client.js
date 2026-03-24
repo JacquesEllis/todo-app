@@ -1,21 +1,24 @@
-import { ApolloClient, InMemoryCache, HttpLink, from } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
-import { getAuth } from 'firebase/auth';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { auth } from '../firebase/index';
 
-// Vite exposes env vars prefixed with VITE_ via import.meta.env
-// The GitHub Actions secret GRAPHQL_API_URL must be injected as VITE_GRAPHQL_API_URL
-// at build time (see .github/workflows/deploy.yml)
-const GRAPHQL_URI =
+const GRAPHQL_API_URL =
   import.meta.env.VITE_GRAPHQL_API_URL ||
   'https://us-central1-ai-bot-experiment.cloudfunctions.net/api/graphql';
 
-const httpLink = new HttpLink({ uri: GRAPHQL_URI });
+if (!import.meta.env.VITE_GRAPHQL_API_URL) {
+  console.warn(
+    '[Apollo] VITE_GRAPHQL_API_URL is not set — falling back to hardcoded production URL.',
+    'Set VITE_GRAPHQL_API_URL in .env.local or GitHub Actions secrets.'
+  );
+}
 
-// Attach Firebase ID token to every request
+const httpLink = createHttpLink({
+  uri: GRAPHQL_API_URL,
+});
+
 const authLink = setContext(async (_, { headers }) => {
   try {
-    const auth = getAuth();
     const user = auth.currentUser;
     const token = user ? await user.getIdToken() : null;
     return {
@@ -24,23 +27,17 @@ const authLink = setContext(async (_, { headers }) => {
         ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     };
-  } catch {
+  } catch (err) {
+    console.error('[Apollo] Failed to get ID token:', err);
     return { headers };
   }
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
-    );
-  }
-  if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
-  }
-});
-
 export const client = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
+
+export function clearApolloCache() {
+  return client.clearStore();
+}
