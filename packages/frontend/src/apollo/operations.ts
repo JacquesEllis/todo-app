@@ -26,9 +26,11 @@ export const CREATE_TASK = gql`
 
 export const MARK_COMPLETE = gql`
   mutation MarkComplete($id: ID!, $completed: Boolean!) {
-    updateTask(id: $id, input: { completed: $completed }) {
+    updateTask(id: $id, completed: $completed) {
       id
+      title
       completed
+      createdAt
       completedAt
     }
   }
@@ -36,6 +38,8 @@ export const MARK_COMPLETE = gql`
 
 export const DELETE_TASK = gql`
   mutation DeleteTask($id: ID!) {
-    deleteTask(id: $id)
+    deleteTask(id: $id) {
+      id
+    }
   }
 `;

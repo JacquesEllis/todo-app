@@ -1,27 +1,19 @@
 import type { Config } from 'jest';
 
-/**
- * Jest configuration for packages/frontend.
- * Uses ts-jest to transpile TypeScript and jsdom for browser APIs.
- */
 const config: Config = {
-  preset:          'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
-  moduleNameMapper: {
-    // Resolve workspace aliases the same way Vite does
-    '^@todo-app/shared(.*)$': '<rootDir>/../shared/src$1',
-    '^@todo-app/ui(.*)$':     '<rootDir>/../ui/src$1',
-    // Stub CSS imports so Jest does not choke on them
-    '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/fileMock.ts',
-  },
+  setupFilesAfterFramework: [],
+  setupFilesAfterFramework: undefined,
+  setupFilesAfterFramework: undefined,
   transform: {
-    '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
   },
-  testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
-  ],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/fileMock.ts',
+    '@todo-app/ui': '<rootDir>/../ui/src/index.js',
+    '@todo-app/shared': '<rootDir>/../shared/src/index.js',
+  },
+  setupFilesAfterFramework: ['@testing-library/jest-dom'],
 };
 
 export default config;

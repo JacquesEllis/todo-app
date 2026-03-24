@@ -1,10 +1,5 @@
 /// <reference types="vite/client" />
 
-/**
- * Type declarations for Vite environment variables used in packages/frontend.
- * Values are injected at build time from GitHub Actions secrets / .env.local.
- * Never hardcode actual secret values here.
- */
 interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY:            string;
   readonly VITE_FIREBASE_AUTH_DOMAIN:        string;

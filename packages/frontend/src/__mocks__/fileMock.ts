@@ -1,3 +1,3 @@
-// Stub for static asset imports (CSS, images) in Jest.
-// Jest cannot process CSS files — they are replaced with this empty module.
-export default '';
+// Stub for static file imports (images, SVGs, CSS modules, etc.)
+// Used by Jest moduleNameMapper
+module.exports = 'test-file-stub';

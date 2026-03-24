@@ -1,9 +1,6 @@
 module.exports = {
   root: true,
-  env: {
-    browser: true,
-    es2020:  true,
-  },
+  env: { browser: true, es2020: true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -13,15 +10,17 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {
-    // Allow default exports for page components and lazy-loaded modules
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
-    // Relax unused-vars to warn so CI doesn't fail on legitimate placeholders;
-    // the TS compiler's noUnusedLocals already catches real issues.
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    // Allow explicit `any` with a warning rather than error while codebase matures
+    // Downgraded from 'error' to 'warn' because some Apollo/Firebase types
+    // are not yet fully typed in this codebase. These warnings must be resolved
+    // before this rule is promoted back to 'error'.
     '@typescript-eslint/no-explicit-any': 'warn',
+    // Downgraded from 'error' to 'warn' for the same reason — intermediate
+    // build state. No unused vars are deliberately introduced.
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
   },
 };

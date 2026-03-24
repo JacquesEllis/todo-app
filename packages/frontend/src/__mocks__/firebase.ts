@@ -1,10 +1,9 @@
-/**
- * Module-level mock for ../firebase used in Jest tests.
- * Place this file at src/__mocks__/firebase.ts and Jest will pick it up
- * automatically when tests call jest.mock('../firebase').
- */
+// Manual mock for packages/frontend/src/firebase/index.ts
+// Provides a minimal auth stub used across test files.
 export const auth = {
-  currentUser: { uid: 'test-uid', email: 'test@example.com' },
+  currentUser: {
+    uid: 'test-uid',
+    email: 'test@example.com',
+    displayName: 'Test User',
+  },
 };
-
-export const app = {};
