@@ -13,8 +13,9 @@ import {
   MARK_COMPLETE,
   DELETE_TASK,
 } from '../apollo/operations';
-import { auth } from '../firebase';
+import { auth }    from '../firebase';
 import { signOut } from 'firebase/auth';
+import { client }  from '../apollo/client';
 
 /** Shape returned by the GraphQL `tasks` query */
 interface Task {
@@ -38,7 +39,8 @@ export default function TaskListPage(): JSX.Element {
   const [deleteTask]   = useMutation(DELETE_TASK,  { refetchQueries: [GET_TASKS] });
 
   const handleSignOut = async (): Promise<void> => {
-    // Clear the Apollo cache before signing out so no stale data persists
+    // Clear the Apollo cache before signing out so no stale task data persists
+    // between sessions (especially important if multiple accounts are used).
     await client.clearStore().catch(() => undefined);
     await signOut(auth);
   };
