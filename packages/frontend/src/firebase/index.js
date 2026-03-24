@@ -1,9 +1,6 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-// All Firebase config values must be provided via VITE_FIREBASE_* env vars
-// Set these in packages/frontend/.env.local for local dev
-// Set them as GitHub Actions secrets (injected at build time) for production
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,7 +10,8 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Avoid re-initialising on hot reload
-const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// Guard against double-initialisation in hot-reload environments
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+
 export const auth = getAuth(app);
 export default app;
