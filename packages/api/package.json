@@ -1,20 +1,25 @@
 {
   "name": "@todo-app/api",
   "version": "1.0.0",
+  "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev":   "nodemon src/index.js",
     "build": "echo 'No build step for api'",
-    "test": "jest",
-    "lint": "eslint src/"
+    "test":  "jest",
+    "lint":  "eslint src/"
   },
   "dependencies": {
-    "apollo-server": "^2.26.2",
-    "firebase-admin": "^11.0.0",
-    "graphql": "^15.8.0"
+    "@todo-app/shared": "*",
+    "apollo-server":    "^2.26.2",
+    "firebase-admin":   "^11.11.0",
+    "graphql":          "^15.8.0"
   },
   "devDependencies": {
-    "apollo-server-testing": "^2.25.4",
-    "jest": "^29.6.0",
-    "nodemon": "^3.0.0"
+    "@babel/core":             "^7.23.0",
+    "@babel/preset-env":       "^7.23.0",
+    "apollo-server-testing":   "^2.26.2",
+    "babel-jest":              "^29.6.0",
+    "jest":                    "^29.6.0",
+    "nodemon":                 "^3.0.0"
   }
 }
