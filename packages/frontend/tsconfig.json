@@ -20,13 +20,11 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
-    "baseUrl": ".",
+    /* Path aliases (for IDE; Vite and Jest have their own resolvers) */
     "paths": {
-      "@todo-app/shared": ["../shared/src"],
-      "@todo-app/ui":     ["../ui/src"]
+      "@todo-app/ui":     ["../ui/src/index.js"],
+      "@todo-app/shared": ["../shared/src/index.js"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }
