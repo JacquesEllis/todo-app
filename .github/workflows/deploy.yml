@@ -1,16 +1,19 @@
-name: Deploy
+name: Deploy to Firebase
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Set up Node
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -20,28 +23,29 @@ jobs:
         run: npm ci
 
       - name: Build frontend
-        run: npm run build --workspace=packages/frontend
+        working-directory: packages/frontend
         env:
-          VITE_FIREBASE_API_KEY:             ${{ secrets.FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN:         ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID:          ${{ secrets.FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET:      ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          # Firebase client config
+          VITE_FIREBASE_API_KEY:            ${{ secrets.FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN:        ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID:         ${{ secrets.FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET:     ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID:              ${{ secrets.FIREBASE_APP_ID }}
-          VITE_GRAPHQL_API_URL:              ${{ secrets.GRAPHQL_API_URL }}
+          VITE_FIREBASE_APP_ID:             ${{ secrets.FIREBASE_APP_ID }}
+          # GraphQL API endpoint
+          VITE_GRAPHQL_API_URL:             ${{ secrets.GRAPHQL_API_URL }}
+        run: npm run build
 
-      - name: Deploy Firebase Hosting
+      - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken:              ${{ secrets.GITHUB_TOKEN }}
+          repoToken:            ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId:              ${{ secrets.FIREBASE_PROJECT_ID }}
-          channelId:              live
+          channelId:            live
+          projectId:            ai-bot-experiment
+          target:               ai-bot-experiment
 
-      - name: Deploy Cloud Functions + Firestore rules and indexes
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only functions,firestore:rules,firestore:indexes
+      - name: Deploy Firebase Functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID:     ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: npx firebase-tools@latest deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --project ai-bot-experiment
